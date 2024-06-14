@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memorama</title>
+<style>
+    body {
+        background-color: #ff0000; /* Rojo */
+    }
+    .card {
+        width: 100px;
+        height: 100px;
+        background-color: #ccc;
+        margin: 5px;
+        display: inline-block;
+        cursor: pointer;
+        background-size: cover;
+        background-position: center;
+    }
+</style>
+</head>
+<body>
+
+<div id="game-board"></div>
+
+<script>
+    let images = ["mam.1.jpg", "mom.1.jpg", "mamading.1.jpg", "mamado.1.jpg", "kri.jpeg", "cell.jpeg", "mega.jpeg", "eva.jpeg"];
+    let shuffledImages = shuffle(images.concat(images));
+
+    let gameBoard = document.getElementById("game-board");
+
+    shuffledImages.forEach(function (image, index) {
+        let div = document.createElement("div");
+        div.classList.add("card");
+        div.dataset.index = index;
+        // Ocultar las imágenes al principio
+        // div.style.backgroundImage = url(${image});
+        gameBoard.appendChild(div);
+    });
+
+    let selectedCard = null;
+    let waiting = false;
+
+    gameBoard.addEventListener("click", function (event) {
+        let clickedCard = event.target;
+
+        if (waiting || clickedCard.classList.contains("card--matched") || clickedCard === selectedCard) {
+            return;
+        }
+
+        clickedCard.style.backgroundImage = url(${shuffledImages[clickedCard.dataset.index]});
+
+        if (!selectedCard) {
+            selectedCard = clickedCard;
+        } else {
+            waiting = true;
+
+            if (shuffledImages[clickedCard.dataset.index] === shuffledImages[selectedCard.dataset.index]) {
+                setTimeout(function () {
+                    clickedCard.classList.add("card--matched");
+                    selectedCard.classList.add("card--matched");
+                    selectedCard = null;
+                    waiting = false;
+                }, 500);
+            } else {
+                setTimeout(function () {
+                    clickedCard.style.backgroundImage = "";
+                    selectedCard.style.backgroundImage = "";
+                    selectedCard = null;
+                    waiting = false;
+                }, 1000);
+            }
+        }
+    });
+
+    function shuffle(array) {
+        let currentIndex = array.length, temporaryValue, randomIndex;
+
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+    }
+</script>
+
+</body>
+</html>
